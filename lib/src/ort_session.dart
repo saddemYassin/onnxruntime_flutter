@@ -263,6 +263,24 @@ class OrtSessionOptions {
         .asFunction<void Function(ffi.Pointer<bg.OrtSessionOptions>)>()(_ptr);
   }
 
+  /// Register Custom Ops Library
+  void registerCustomOpsLibrary(String libPath) {
+    final ppv = calloc<ffi.Pointer<ffi.Void>>();
+    final statusPtr = OrtEnv.instance.ortApiPtr.ref.RegisterCustomOpsLibrary
+        .asFunction<
+        bg.OrtStatusPtr Function(
+            ffi.Pointer<bg.OrtSessionOptions>, ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Void>>)>()(_ptr, libPath.toNativeUtf8().cast<ffi.Char>(), ppv);
+    OrtStatus.checkOrtStatus(statusPtr);
+  }
+
+  /// Register Custom Ops Library V2
+  void registerCustomOpsLibraryV2(String libPath) {
+    final statusPtr = OrtEnv.instance.ortApiPtr.ref.RegisterCustomOpsLibrary_V2
+        .asFunction<bg.OrtStatusPtr Function(ffi.Pointer<bg.OrtSessionOptions>,
+        ffi.Pointer<ffi.Char>)>()(_ptr, libPath.toNativeUtf8().cast<ffi.Char>());
+    OrtStatus.checkOrtStatus(statusPtr);
+  }
+
   /// Sets the number of intra op threads.
   void setIntraOpNumThreads(int numThreads) {
     _intraOpNumThreads = numThreads;
