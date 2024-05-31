@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -60,6 +61,14 @@ class VadIterator {
       ..setInterOpNumThreads(1)
       ..setIntraOpNumThreads(1)
       ..setSessionGraphOptimizationLevel(GraphOptimizationLevel.ortEnableAll);
+    if(Platform.isAndroid) {
+      // Register library in android after adding the onnxruntime_extensions in app/build.gradle
+      _sessionOptions!.registerCustomOpsLibrary('libortextensions.so');
+    } else if(Platform.isIOS){
+      // Register library in android after adding the onnxruntime-extensions-c pod in podfile
+      // and adding the onnxruntime_extension.xcframework provided by the pod in Runner > TARGETS > Runner > build Phases > Embed Frameworks
+      _sessionOptions!.registerCustomOpsLibrary('onnxruntime_extensions.framework/onnxruntime_extensions');
+    }
     const assetFileName = 'assets/models/silero_vad.onnx';
     final rawAssetFile = await rootBundle.load(assetFileName);
     final bytes = rawAssetFile.buffer.asUint8List();
